@@ -31,6 +31,6 @@ class ConcurrentLimitStrategy(BaseStrategy):
             return None  # Wait indefinitely
         return 0
 
-    async def task_done(self) -> None:
+    async def on_task_done(self) -> None:
         async with self._lock:
             self.running -= 1

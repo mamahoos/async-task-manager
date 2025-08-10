@@ -33,6 +33,6 @@ class DelayedStrategy(BaseStrategy):
                 return self.delay_seconds - elapsed
         return 0
 
-    async def mark_task_done(self) -> None:
+    async def on_task_done(self) -> None:
         async with self._lock:
             self._last_run = asyncio.get_event_loop().time()
