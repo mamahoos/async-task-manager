@@ -15,12 +15,12 @@ class FixedWindowStrategy(BaseStrategy):
     def __init__(self, max_requests: int, window_seconds: float) -> None:
         self.max_requests   = self._validate_max_requests(max_requests)
         self.window_seconds = self._validate_window_seconds(window_seconds)
-        self.tasks          = deque()
-        self.request_times  = deque()
+        self.tasks        : deque[Task]   = deque()
+        self.request_times: deque[float]  = deque()
         
     @staticmethod
     def _validate_max_requests(max_requests: int, /) -> int:
-        if not isinstance(max_requests, int):
+        if not isinstance(max_requests, int): # pyright: ignore[reportUnnecessaryIsInstance]
             raise TypeError(f"max_requests must be an integer, got {type(max_requests).__name__}")
         
         if max_requests <= 0:

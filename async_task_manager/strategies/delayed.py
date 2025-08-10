@@ -14,9 +14,9 @@ class DelayedStrategy(BaseStrategy):
 
     def __init__(self, delay_seconds: float) -> None:
         self.delay_seconds = self._validate_delay_seconds(delay_seconds)
-        self.tasks         = deque()
         self._last_run     = 0
         self._lock         = asyncio.Lock()
+        self.tasks: deque[Task] = deque()
         
     @staticmethod
     def _validate_delay_seconds(delay_seconds: float, /) -> float:

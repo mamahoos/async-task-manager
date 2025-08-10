@@ -13,9 +13,9 @@ class ConcurrentLimitStrategy(BaseStrategy):
 
     def __init__(self, max_concurrent: int) -> None:
        self.max_concurrent = self._validate_max_concurrent(max_concurrent)
-       self.tasks          = deque()
        self.running        = 0
        self._lock          = asyncio.Lock()
+       self.tasks: deque[Task] = deque()
 
     @staticmethod
     def _validate_max_concurrent(max_concurrent: int, /) -> int:
@@ -32,7 +32,7 @@ class ConcurrentLimitStrategy(BaseStrategy):
             TypeError: If max_concurrent is not an integer
             ValueError: If max_concurrent is less than or equal to 0
         """
-        if not isinstance(max_concurrent, int):
+        if not isinstance(max_concurrent, int): # pyright: ignore[reportUnnecessaryIsInstance]
             raise TypeError(f"max_concurrent must be an integer, got {type(max_concurrent).__name__}")
         
         if max_concurrent <= 0:
