@@ -7,10 +7,9 @@ from .strategies.base import BaseStrategy
 
 class TaskManager:
     def __init__(self, strategy: BaseStrategy, poll_interval: float = 0.01) -> None:
-        self.strategy      = strategy
-        self.poll_interval = poll_interval
-        self._running      = False
-        self._worker_task  = None
+        self.strategy       = strategy
+        self.poll_interval  = self._validate_poll_interval(poll_interval)
+        self._running: bool = False
 
     def add_task(self, coro: Awaitable[Any], metadata: Optional[Dict[str, Any]] = None) -> None:
         task = Task(coro, metadata)
@@ -30,10 +29,17 @@ class TaskManager:
 
     async def stop(self) -> None:
         self._running = False
-        if self._worker_task:
-            self._worker_task.cancel()
 
     async def _execute_task(self, task: Task) -> None:
         await task.run()
         await self.strategy.on_task_done()
 
+    @staticmethod
+    def _validate_poll_interval(poll_interval: float, /) -> float:
+        if not isinstance(poll_interval, float):
+            raise TypeError(f"poll_interval must be a float, got {type(poll_interval).__name__}")
+        
+        if poll_interval <= 0.0:
+            raise ValueError(f"poll_interval must be greater than 0.0, got {poll_interval}")
+        
+        return poll_interval
