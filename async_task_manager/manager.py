@@ -26,6 +26,9 @@ class TaskManager:
                 await asyncio.sleep(self.poll_interval)
             else:
                 await asyncio.sleep(interval)
+    
+    async def idle(self) -> None:
+        asyncio.create_task(self.run())
 
     async def stop(self) -> None:
         self._running = False
