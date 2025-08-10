@@ -6,7 +6,7 @@ from .strategies.base import BaseStrategy
 
 
 class TaskManager:
-    def __init__(self, strategy: BaseStrategy, poll_interval: float = 0.5) -> None:
+    def __init__(self, strategy: BaseStrategy, poll_interval: float = 0.01) -> None:
         self.strategy      = strategy
         self.poll_interval = poll_interval
         self._running      = False
@@ -35,8 +35,5 @@ class TaskManager:
 
     async def _execute_task(self, task: Task) -> None:
         await task.run()
-        # If strategy has task_done method
-        if hasattr(self.strategy, "task_done"):
-            await getattr(self.strategy, "task_done")()
-        if hasattr(self.strategy, "mark_task_done"):
-            await getattr(self.strategy, "mark_task_done")()
+        await self.strategy.on_task_done()
+
