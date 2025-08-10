@@ -180,5 +180,6 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# Ignore debug files
+# Ignore debugs
+debug/
 debug.*
