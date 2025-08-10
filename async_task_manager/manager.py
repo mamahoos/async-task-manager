@@ -1,6 +1,6 @@
 from __future__ import annotations
 import asyncio
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable, Dict, Optional
 from .task import Task
 from .strategies.base import BaseStrategy
 
@@ -12,7 +12,7 @@ class TaskManager:
         self._running      = False
         self._worker_task  = None
 
-    def add_task(self, coro: Awaitable[Any], metadata: Dict[str, Any] | None = None) -> None:
+    def add_task(self, coro: Awaitable[Any], metadata: Optional[Dict[str, Any]] = None) -> None:
         task = Task(coro, metadata)
         self.strategy.add_task(task)
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 import asyncio
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable, Dict, Optional
 
 
 class Task:
@@ -10,7 +10,7 @@ class Task:
     
     __all__ = ('coro', 'metadata', '_result', '_done')
 
-    def __init__(self, coro: Awaitable[Any], metadata: Dict[str, Any] | None = None) -> None:
+    def __init__(self, coro: Awaitable[Any], metadata: Optional[Dict[str, Any]] = None) -> None:
         self.coro     = coro
         self.metadata = metadata or {}
         self._result  = None

@@ -1,19 +1,19 @@
 from __future__ import annotations
-import abc
+from abc import ABC, abstractmethod
 from typing import Optional
 from ..task import Task
 
 
-class BaseStrategy(abc.ABC):
-    @abc.abstractmethod
+class BaseStrategy(ABC):
+    @abstractmethod
     def add_task(self, task: Task) -> None:
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_next_task(self) -> Optional[Task]:
         raise NotImplementedError
 
-    @abc.abstractmethod
+    @abstractmethod
     async def get_sleep_interval(self) -> Optional[float]:
         raise NotImplementedError
 

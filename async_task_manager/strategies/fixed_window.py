@@ -13,10 +13,30 @@ class FixedWindowStrategy(BaseStrategy):
     """
 
     def __init__(self, max_requests: int, window_seconds: float) -> None:
-        self.max_requests   = max_requests
-        self.window_seconds = window_seconds
+        self.max_requests   = self._validate_max_requests(max_requests)
+        self.window_seconds = self._validate_window_seconds(window_seconds)
         self.tasks          = deque()
         self.request_times  = deque()
+        
+    @staticmethod
+    def _validate_max_requests(max_requests: int, /) -> int:
+        if not isinstance(max_requests, int):
+            raise TypeError(f"max_requests must be an integer, got {type(max_requests).__name__}")
+        
+        if max_requests <= 0:
+            raise ValueError(f"max_requests must be greater than 0, got {max_requests}")
+        
+        return max_requests
+    
+    @staticmethod
+    def _validate_window_seconds(window_seconds: float, /) -> float:
+        if not isinstance(window_seconds, float):
+            raise TypeError(f"window_seconds must be a float, got {type(window_seconds).__name__}")
+        
+        if window_seconds <= 0.0:
+            raise ValueError(f"window_seconds must be greater than 0.0, got {window_seconds}")
+        
+        return window_seconds
 
     def add_task(self, task: Task) -> None:
         self.tasks.append(task)
