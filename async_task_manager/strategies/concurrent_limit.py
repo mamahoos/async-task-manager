@@ -19,22 +19,6 @@ class ConcurrentLimitStrategy(BaseStrategy):
 
     @staticmethod
     def _validate_max_concurrent(max_concurrent: int, /) -> int:
-        """
-        Validates the max_concurrent parameter.
-        
-        Args:
-            max_concurrent: Maximum number of concurrent tasks
-            
-        Returns:
-            int: Validated max_concurrent value
-            
-        Raises:
-            TypeError: If max_concurrent is not an integer
-            ValueError: If max_concurrent is less than or equal to 0
-        """
-        if not isinstance(max_concurrent, int): # pyright: ignore[reportUnnecessaryIsInstance]
-            raise TypeError(f"max_concurrent must be an integer, got {type(max_concurrent).__name__}")
-        
         if max_concurrent <= 0:
             raise ValueError(f"max_concurrent must be greater than 0, got {max_concurrent}")
         

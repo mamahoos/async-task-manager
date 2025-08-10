@@ -36,9 +36,6 @@ class TaskManager:
 
     @staticmethod
     def _validate_poll_interval(poll_interval: float, /) -> float:
-        if not isinstance(poll_interval, float):
-            raise TypeError(f"poll_interval must be a float, got {type(poll_interval).__name__}")
-        
         if poll_interval <= 0.0:
             raise ValueError(f"poll_interval must be greater than 0.0, got {poll_interval}")
         

@@ -20,9 +20,6 @@ class FixedWindowStrategy(BaseStrategy):
         
     @staticmethod
     def _validate_max_requests(max_requests: int, /) -> int:
-        if not isinstance(max_requests, int): # pyright: ignore[reportUnnecessaryIsInstance]
-            raise TypeError(f"max_requests must be an integer, got {type(max_requests).__name__}")
-        
         if max_requests <= 0:
             raise ValueError(f"max_requests must be greater than 0, got {max_requests}")
         
@@ -30,11 +27,8 @@ class FixedWindowStrategy(BaseStrategy):
     
     @staticmethod
     def _validate_window_seconds(window_seconds: float, /) -> float:
-        if not isinstance(window_seconds, float):
-            raise TypeError(f"window_seconds must be a float, got {type(window_seconds).__name__}")
-        
         if window_seconds <= 0.0:
-            raise ValueError(f"window_seconds must be greater than 0.0, got {window_seconds}")
+            raise ValueError(f"window_seconds must be greater than 0, got {window_seconds}")
         
         return window_seconds
 
