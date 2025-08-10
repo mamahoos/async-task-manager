@@ -1,44 +1,42 @@
+from __future__ import annotations
 import asyncio
-from collections import deque
-from typing import Optional
-
+from typing import Any, Awaitable, Dict
 from .task import Task
-from .strategies.base import RateLimitStrategy
+from .strategies.base import BaseStrategy
 
 
-class RateLimitedTaskManager:
-    def __init__(self, strategy: RateLimitStrategy, worker_delay: float = 0.01):
-        self.queue: deque[Task] = deque()
-        self.strategy           = strategy
-        self._running           = False
-        self.delay: float       = worker_delay
-        self._task: Optional[asyncio.Task] = None
+class TaskManager:
+    def __init__(self, strategy: BaseStrategy, poll_interval: float = 0.5) -> None:
+        self.strategy      = strategy
+        self.poll_interval = poll_interval
+        self._running      = False
+        self._worker_task  = None
 
-    def add_task(self, coro) -> None:
-        """Wraps and adds a coroutine to the queue."""
-        self.queue.append(Task(coro))
+    def add_task(self, coro: Awaitable[Any], metadata: Dict[str, Any] | None = None) -> None:
+        task = Task(coro, metadata)
+        self.strategy.add_task(task)
 
-    def start(self) -> None:
-        if not self._running:
-            self._running = True
-            self._task = asyncio.create_task(self._worker())
+    async def run(self) -> None:
+        self._running = True
+        while self._running:
+            task = self.strategy.get_next_task()
+            if task:
+                asyncio.create_task(self._execute_task(task))
+            interval = await self.strategy.get_sleep_interval()
+            if interval is None:
+                await asyncio.sleep(self.poll_interval)
+            else:
+                await asyncio.sleep(interval)
 
     async def stop(self) -> None:
         self._running = False
-        if self._task:
-            self._task.cancel()
-            try:
-                await self._task
-            except asyncio.CancelledError:
-                pass
+        if self._worker_task:
+            self._worker_task.cancel()
 
-    async def _worker(self) -> None:
-        while self._running:
-            if not self.queue:
-                await asyncio.sleep(self.delay)
-                continue
-
-            await self.strategy.allow()
-
-            task = self.queue.popleft()
-            asyncio.create_task(task.run())
+    async def _execute_task(self, task: Task) -> None:
+        await task.run()
+        # If strategy has task_done method
+        if hasattr(self.strategy, "task_done"):
+            await getattr(self.strategy, "task_done")()
+        if hasattr(self.strategy, "mark_task_done"):
+            await getattr(self.strategy, "mark_task_done")()

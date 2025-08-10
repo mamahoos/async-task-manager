@@ -1,11 +1,34 @@
-from typing import Awaitable
+from __future__ import annotations
+import asyncio
+from typing import Any, Awaitable, Dict
+
 
 class Task:
-    def __init__(self, coro: Awaitable):
-        self.coro = coro
+    """
+    Represents an asynchronous task with optional metadata.
+    """
+    
+    __all__ = ('coro', 'metadata', '_result', '_done')
 
-    async def run(self):
+    def __init__(self, coro: Awaitable[Any], metadata: Dict[str, Any] | None = None) -> None:
+        self.coro     = coro
+        self.metadata = metadata or {}
+        self._result  = None
+        self._done    = asyncio.Event()
+
+    async def run(self) -> Any:
+        """
+        Executes the coroutine and stores the result.
+        """
         try:
-            await self.coro
-        except Exception as e:
-            print(f"[Task] Error: {e}")
+            self._result = await self.coro
+        finally:
+            self._done.set()
+        return self._result
+
+    async def wait(self) -> Any:
+        """
+        Waits for the task to finish and returns the result.
+        """
+        await self._done.wait()
+        return self._result
