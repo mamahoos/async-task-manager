@@ -10,7 +10,7 @@ class Task:
     
     __all__ = ('coro', 'metadata', '_result', '_done')
 
-    def __init__(self, coro: Awaitable[Any], *metadata: Any) -> None:
+    def __init__(self, coro: Awaitable[Any], metadata: Dict[str, Any]) -> None:
         self.coro     = coro
         self.metadata = metadata
         self._result  = None

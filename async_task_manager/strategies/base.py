@@ -1,12 +1,12 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Any
 from ..task import Task
 
 
 class BaseStrategy(ABC):
     @abstractmethod
-    def add_task(self, task: Task) -> None:
+    def add_task(self, task: Task) -> Any:
         raise NotImplementedError
 
     @abstractmethod
