@@ -11,9 +11,10 @@ class TaskManager:
         self.poll_interval  = self._validate_poll_interval(poll_interval)
         self._running: bool = False
 
-    def add_task(self, coro: Awaitable[Any], **metadata: Any) -> Any:
+    async def add_task[T](self, coro: Awaitable[T], **metadata: Any) -> T:
         task = Task(coro, metadata)
-        return self.strategy.add_task(task)
+        self.strategy.add_task(task)
+        return await task.run()
 
     async def run(self) -> None:
         self._running = True
